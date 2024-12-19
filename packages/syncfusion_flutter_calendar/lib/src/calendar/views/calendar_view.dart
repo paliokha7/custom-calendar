@@ -58,6 +58,7 @@ class CustomCalendarScrollView extends StatefulWidget {
       this.timelineMonthWeekNumberNotifier,
       this.updateCalendarState,
       this.getCalendarState,
+      this.dragSettings,
       {Key? key})
       : super(key: key);
 
@@ -135,6 +136,9 @@ class CustomCalendarScrollView extends StatefulWidget {
 
   /// Holds the localization data of the calendar widget.
   final SfLocalizations localizations;
+
+  // Use for show 5 minutes interval for timeIndicator
+  final DragAndDropSettings dragSettings;
 
   /// Updates the focus to the custom scroll view element.
   void updateFocus() {
@@ -1847,6 +1851,11 @@ class _CustomCalendarScrollViewState extends State<CustomCalendarScrollView>
         }
       }
     }
+    DateTime roundToNearestFiveMinutes(DateTime dateTime) {
+      final minute = (dateTime.minute / 5).round() * 5;
+      return DateTime(
+          dateTime.year, dateTime.month, dateTime.day, dateTime.hour, minute);
+    }
 
     _dragDetails.value.position.value = Offset(
         _dragDetails.value.position.value!.dx,
@@ -1854,7 +1863,9 @@ class _CustomCalendarScrollViewState extends State<CustomCalendarScrollView>
     _dragDetails.value.draggingTime =
         yPosition <= 0 && widget.view != CalendarView.month && !isTimelineView
             ? null
-            : draggingTime;
+            : widget.dragSettings.enableFiveMinutesTimeIndicator
+                ? roundToNearestFiveMinutes(draggingTime)
+                : draggingTime;
     _dragDetails.value.position.value = Offset(
         _dragDetails.value.position.value!.dx,
         _dragDetails.value.position.value!.dy + 0.1);
@@ -12490,7 +12501,7 @@ class _TimeRulerView extends CustomPainter {
       final double timelineViewWidth =
           timeIntervalHeight * horizontalLinesCount;
       for (int i = 0; i < visibleDates.length; i++) {
-        date = visibleDates[i];
+        print('date $date');
         _drawTimeLabels(
             canvas, size, date, hour, xPosition, yPosition, timeTextStyle);
         if (isRTL) {
@@ -12559,7 +12570,7 @@ class _TimeRulerView extends CustomPainter {
         startXPosition = isRTL ? xPosition - _textPainter.width : xPosition;
       }
 
-      double startYPosition = yPosition - (_textPainter.height / 2);
+      double startYPosition = yPosition + 2.0;
 
       if (isTimelineView) {
         startYPosition = (size.height - _textPainter.height) / 2;
@@ -12574,7 +12585,6 @@ class _TimeRulerView extends CustomPainter {
             Offset(isRTL ? 0 : size.width - (startXPosition / 2), yPosition);
         final Offset end =
             Offset(isRTL ? startXPosition / 2 : size.width, yPosition);
-        canvas.drawLine(start, end, _linePainter);
         yPosition += timeIntervalHeight;
         if (yPosition.round() == size.height.round()) {
           break;
@@ -13333,6 +13343,7 @@ class _ResizingAppointmentPainter extends CustomPainter {
 
   /// Draw the time indicator when resizing the appointment on all calendar
   /// views except month and timelineMonth views.
+
   void _drawTimeIndicator(
       Canvas canvas, bool isTimelineView, Size size, bool isBackwardResize) {
     if (view == CalendarView.month || view == CalendarView.timelineMonth) {

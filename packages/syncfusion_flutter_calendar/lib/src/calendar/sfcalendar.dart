@@ -8553,6 +8553,7 @@ class _SfCalendarState extends State<SfCalendar>
             _timelineMonthWeekNumberNotifier,
             _updateCalendarState,
             _getCalendarStateDetails,
+            widget.dragAndDropSettings,
             key: _customScrollViewKey,
           )),
     );

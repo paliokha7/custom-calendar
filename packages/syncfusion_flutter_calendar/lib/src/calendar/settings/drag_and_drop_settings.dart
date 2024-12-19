@@ -44,6 +44,7 @@ class DragAndDropSettings with Diagnosticable {
     this.timeIndicatorStyle,
     this.indicatorTimeFormat = 'h:mm a',
     this.autoNavigateDelay = const Duration(seconds: 1),
+    this.enableFiveMinutesTimeIndicator = false,
   });
 
   /// Allows view navigation when the dragging appointment reaches the start or
@@ -211,6 +212,8 @@ class DragAndDropSettings with Diagnosticable {
   ///   );
   /// }
   final Duration autoNavigateDelay;
+
+  final bool enableFiveMinutesTimeIndicator;
 
   @override
   bool operator ==(Object other) {
