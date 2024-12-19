@@ -12501,7 +12501,7 @@ class _TimeRulerView extends CustomPainter {
       final double timelineViewWidth =
           timeIntervalHeight * horizontalLinesCount;
       for (int i = 0; i < visibleDates.length; i++) {
-        print('date $date');
+        date = visibleDates[i];
         _drawTimeLabels(
             canvas, size, date, hour, xPosition, yPosition, timeTextStyle);
         if (isRTL) {
@@ -12570,7 +12570,7 @@ class _TimeRulerView extends CustomPainter {
         startXPosition = isRTL ? xPosition - _textPainter.width : xPosition;
       }
 
-      double startYPosition = yPosition + 2.0;
+      double startYPosition = yPosition - (_textPainter.height / 2);
 
       if (isTimelineView) {
         startYPosition = (size.height - _textPainter.height) / 2;
@@ -12585,6 +12585,7 @@ class _TimeRulerView extends CustomPainter {
             Offset(isRTL ? 0 : size.width - (startXPosition / 2), yPosition);
         final Offset end =
             Offset(isRTL ? startXPosition / 2 : size.width, yPosition);
+        canvas.drawLine(start, end, _linePainter);
         yPosition += timeIntervalHeight;
         if (yPosition.round() == size.height.round()) {
           break;
